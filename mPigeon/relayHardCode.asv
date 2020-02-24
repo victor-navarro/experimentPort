@@ -1,7 +1,0 @@
-IOPort('CloseAll')
-p = IOPort('OpenSerialPort','COM3'); %initialize object for serial port COM4);
-
-global gmpigeonPort;
-gmpigeonPort=p;
-
-%[nwritten, when, errmsg, prewritetime, postwritetime, lastchecktime] = IOPort('Write', p, uint8(1));
