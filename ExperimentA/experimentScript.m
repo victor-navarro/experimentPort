@@ -113,6 +113,7 @@ function experimentScript
             
             case 'ITI'
                 HideCursor(screenInfo.windowPointer);
+                hf.silverbox(serialPort, 'light-on');
                 trialInfo.ITIStart = tic;
                 sessionInfo.state = 'ITI_CHECK';
                 
@@ -206,7 +207,6 @@ function experimentScript
             case 'TIMEOUT'
                 updateScreen('timeout', screenInfo, trialInfo, sessionInfo, expParameters);
                 if toc(timeoutStart) >= trialInfo.timeout
-                    hf.silverbox(serialPort, 'light-on');
                     sessionInfo.state = 'END_TRIAL';
                 end
                 
@@ -261,6 +261,9 @@ function experimentScript
     Screen('closeall')
     %open control panel with summary
     waitfor(controlPanel);
+    %Be nice to the pigeons, keep them with the light on until we close the
+    %control panel.
+    hf.silverbox(serialPort, 'light-off');
 end
 
 function updateScreen(type, screenInfo, trialInfo, sessionInfo, expParameters)
