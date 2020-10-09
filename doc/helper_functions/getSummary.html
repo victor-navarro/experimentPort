@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getSummary</title>
+  <meta name="keywords" content="getSummary">
+  <meta name="description" content="GETSUMMARY Get a summary string on data set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">helper_functions</a> &gt; getSummary.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for helper_functions&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>getSummary
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>GETSUMMARY Get a summary string on data set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function summary = getSummary(data, dv, iv) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETSUMMARY Get a summary string on data set
+ Mostly used to get email-ready summaries.
+
+ USE:
+     summary = getSummary(data, dv, iv)
+
+ ARGS:
+     data: a MATLAB table, usually the output of readData
+     dv: a string denoting the column containing the dependent variable
+     iv: a string denoting the column containing the independent variable
+
+ VALS:
+     summary: a string
+
+ See also <a href="readData.html" class="code" title="function data = readData(fname, vars)">READDATA</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function summary = getSummary(data, dv, iv)</a>
+0002 <span class="comment">% GETSUMMARY Get a summary string on data set</span>
+0003 <span class="comment">% Mostly used to get email-ready summaries.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% USE:</span>
+0006 <span class="comment">%     summary = getSummary(data, dv, iv)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% ARGS:</span>
+0009 <span class="comment">%     data: a MATLAB table, usually the output of readData</span>
+0010 <span class="comment">%     dv: a string denoting the column containing the dependent variable</span>
+0011 <span class="comment">%     iv: a string denoting the column containing the independent variable</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% VALS:</span>
+0014 <span class="comment">%     summary: a string</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also READDATA</span>
+0017 
+0018     <span class="comment">%only does one column. If you want nested levels, you need to pass a</span>
+0019     <span class="comment">%subsetted data (e.g., data.([1, 4, 5], :))</span>
+0020     summary = [];
+0021     [b, ~, n] = unique(data.(iv) , <span class="string">'first'</span>);
+0022     sums  = accumarray(n , data.(dv) , size(b) , @(x) sum(x));
+0023     lengths  = accumarray(n , data.(dv) , size(b) , @(x) length(x));
+0024     means = sums./lengths;
+0025     
+0026     <span class="comment">%line breaks are forced</span>
+0027     <span class="keyword">for</span> i = 1:size(b)
+0028         summary = [summary sprintf(<span class="string">'%s (%d/%d) = %1.2f'</span>, b{i}, sums(i), lengths(i), means(i)) 10];
+0029     <span class="keyword">end</span>
+0030     summary = [summary, 10];
+0031     
+0032     
+0033</pre></div>
+<hr><address>Generated on Wed 07-Oct-2020 17:13:47 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

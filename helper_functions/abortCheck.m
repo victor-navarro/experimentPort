@@ -1,10 +1,13 @@
 function state = abortCheck(state)
 % ABORTCHECK Check keyboard inputs for abort code
+%
+% USE:
 % newstate = abortCheck(state);
 %
-% arguments:
+% ARGS:
 %	state: a string denoting the state in the experiment.
-% returns:
+%
+% VALS:
 %	newstate: state or 'ABORT' if the both control keys are being pressed.
 
 	[pressed, ~, key] = KbCheck();
