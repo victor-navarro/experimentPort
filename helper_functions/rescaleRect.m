@@ -18,5 +18,5 @@ function rect = rescaleRect(rect, rectRange, newRange)
 %
 % See also: RESCALE
 
-    rect([1, 3]) = hf.rescale(rect([1, 3]), rectRange([1, 3]), newRange([1, 3]));
-    rect([2, 4]) = hf.rescale(rect([2, 4]), rectRange([2, 4]), newRange([2, 4]));
+    rect([1, 3]) = rescale(rect([1, 3]), rectRange([1, 3]), newRange([1, 3]));
+    rect([2, 4]) = rescale(rect([2, 4]), rectRange([2, 4]), newRange([2, 4]));

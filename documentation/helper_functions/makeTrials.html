@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of makeTrials</title>
+  <meta name="keywords" content="makeTrials">
+  <meta name="description" content="MAKETRIALS Make trials from file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">helper_functions</a> &gt; makeTrials.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for helper_functions&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>makeTrials
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>MAKETRIALS Make trials from file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function trialData = makeTrials(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MAKETRIALS Make trials from file
+
+ USE:
+     trialData = makeTrials(filename)
+
+ ARGS:
+     filename: a string pointing to the file containing the information (usually located in /tasks).
+
+ VALS:
+    trialData: a struct containing trial-level information.
+
+ Notes:
+     Makes trialData (a struct). The field names of the struct are determined by the header in the file.
+   It looks for warmuptable and trainingtable rows to generate the trials.
+   DOES NOT USE TESTTABLE. It is the experimenter's responsibility to control the contingencies (and the intermixing) of testing trials.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function trialData = makeTrials(filename)</a>
+0002 <span class="comment">% MAKETRIALS Make trials from file</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% USE:</span>
+0005 <span class="comment">%     trialData = makeTrials(filename)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% ARGS:</span>
+0008 <span class="comment">%     filename: a string pointing to the file containing the information (usually located in /tasks).</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% VALS:</span>
+0011 <span class="comment">%    trialData: a struct containing trial-level information.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Notes:</span>
+0014 <span class="comment">%     Makes trialData (a struct). The field names of the struct are determined by the header in the file.</span>
+0015 <span class="comment">%   It looks for warmuptable and trainingtable rows to generate the trials.</span>
+0016 <span class="comment">%   DOES NOT USE TESTTABLE. It is the experimenter's responsibility to control the contingencies (and the intermixing) of testing trials.</span>
+0017 
+0018     <span class="comment">%Read file with the trial information</span>
+0019     <span class="keyword">try</span>
+0020         tableInfo = readtable([<span class="string">'./tasks/'</span> filename]);
+0021     <span class="keyword">catch</span>
+0022         errordlg(<span class="string">'Cannot read the task file'</span>, <span class="string">'Error!'</span>);
+0023         <span class="keyword">return</span>
+0024     <span class="keyword">end</span>
+0025     <span class="comment">%Get variable names</span>
+0026     varnames = tableInfo.Properties.VariableNames;   
+0027     <span class="comment">%Check that no name in the header is makeType</span>
+0028     <span class="keyword">if</span> any(strcmp(<span class="string">'makeType'</span>, varnames))
+0029         errordlg(<span class="string">'The &quot;makeType&quot; variable name is reserved. Use a different name in your task file, please.'</span>);
+0030         <span class="keyword">return</span>
+0031     <span class="keyword">end</span>
+0032     <span class="comment">%Find and make warmup trials</span>
+0033     wmupI = find(ismember(tableInfo{:, 1},<span class="string">'warmuptable'</span>));
+0034     trainI = find(ismember(tableInfo{:, 1},<span class="string">'trainingtable'</span>));
+0035     <span class="keyword">if</span> isempty(trainI)
+0036         errordlg(<span class="string">'No trainingtable found in your file.'</span>, <span class="string">'Error!'</span>);
+0037         <span class="keyword">return</span>
+0038     <span class="keyword">end</span>
+0039     wIs = []; <span class="comment">%holder to save the indexes of warmup trials</span>
+0040     <span class="keyword">if</span> ~isempty(wmupI)
+0041         wmupBlocks = tableInfo{wmupI, 2}; <span class="comment">%we expect the table size to be in the second column</span>
+0042         <span class="keyword">if</span> iscell(wmupBlocks)
+0043             wmupBlocks = wmupBlocks{:};
+0044             <span class="keyword">if</span> ischar(wmupBlocks)
+0045                 wmupBlocks = str2double(wmupBlocks);
+0046             <span class="keyword">end</span>
+0047         <span class="keyword">end</span>
+0048         <span class="comment">%identify the rows that contain warmup information</span>
+0049         wmupIs = wmupI+1:(trainI-1);
+0050         <span class="comment">%For readability, use a for loop</span>
+0051         <span class="keyword">for</span> b = 1:wmupBlocks
+0052             wIs = [wIs, wmupIs(randperm(length(wmupIs)))];
+0053         <span class="keyword">end</span>
+0054     <span class="keyword">end</span>
+0055     
+0056     <span class="comment">%Find and make training trials</span>
+0057     tIs = [];
+0058     trainBlocks = tableInfo{trainI, 2};
+0059     <span class="keyword">if</span> iscell(trainBlocks)
+0060         trainBlocks = trainBlocks{:};
+0061         <span class="keyword">if</span> ischar(trainBlocks)
+0062             trainBlocks = str2double(trainBlocks);
+0063         <span class="keyword">end</span>
+0064     <span class="keyword">end</span>
+0065     trainIs = trainI+1:size(tableInfo, 1);
+0066     <span class="keyword">for</span> b = 1:trainBlocks
+0067         tIs = [tIs, trainIs(randperm(length(trainIs)))];
+0068     <span class="keyword">end</span>
+0069     
+0070     <span class="comment">%create trialData</span>
+0071     trialData = table();
+0072     trialData.makeType = zeros(0); <span class="comment">%reserved for this function (Warmup of Training);</span>
+0073     <span class="comment">%Pre-populate table with fields contained in the csv file</span>
+0074     <span class="keyword">for</span> v = 1:length(varnames)
+0075         trialData.(varnames{v}) = zeros(0);
+0076     <span class="keyword">end</span>
+0077     <span class="comment">%Append the trials</span>
+0078     makeType = repmat({<span class="string">'Warmup'</span>}, [length(wIs), 1]);
+0079     trialData = [trialData; [table(makeType), tableInfo(wIs, :)]];
+0080     makeType = repmat({<span class="string">'Training'</span>}, [length(tIs), 1]);
+0081     trialData = [trialData; [table(makeType), tableInfo(tIs, :)]];
+0082     
+0083     <span class="comment">%Try to convert number strings to doubles</span>
+0084     <span class="keyword">for</span> v = 1:length(varnames)
+0085         <span class="keyword">if</span> iscell(trialData{1, 1+v})
+0086             <span class="keyword">if</span> ismember(trialData{1, 1+v}{1}, <span class="string">'0123456789+-.'</span>)
+0087                 trialData.(varnames{v}) = str2double(trialData{:, 1+v});
+0088             <span class="keyword">end</span>
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>    
+0091 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 09-Oct-2020 12:34:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -13,13 +13,16 @@ function saveData(fname, requestedVars, format, data)
 %	none
 %
 % See also MAKESAVEFORMAT
-
+    if ~exist('./data/', 'dir')
+            mkdir('./data/')
+    end
     f = fopen(['./data/' fname], 'a');
     for e = 1:length(requestedVars)
         try
             fprintf(f, format{e}, data.(requestedVars{e}));
         catch
-            errordlg('Something went wrong when saving data. Column not found', 'Error!');
+            errordlg('Something went wrong when saving data!', 'Error!');
+            return
         end
     end
     fclose(f);
